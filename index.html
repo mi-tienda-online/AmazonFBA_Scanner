@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBA Arbitrage Scanner</title>
+    <!-- Ruta actualizada apuntando a la carpeta css -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Librería para la cámara -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>FBA Abarrotes Scanner</h2>
+    
+    <div id="reader"></div>
+    <button id="btnEscanear" style="background: #007600; color: white; margin-bottom: 15px;">Activar Cámara</button>
+
+    <label for="barcode">Código de Barras / ASIN:</label>
+    <input type="text" id="barcode" placeholder="Escanea o escribe el código...">
+
+    <label for="costoLocal">Precio en Tienda Local ($):</label>
+    <input type="number" id="costoLocal" placeholder="Ej. 25.00">
+
+    <label for="precioAmazon">Precio de Venta en Amazon ($):</label>
+    <input type="number" id="precioAmazon" placeholder="Ej. 120.00">
+
+    <button id="btnCalcular">Calcular Utilidad FBA</button>
+
+    <div class="result" id="resultadoBox" style="display:none;">
+        <p>Tarifa Amazon (15%): $<span id="tarifaAmazon">0.00</span></p>
+        <p>Ganancia Neta: <span id="gananciaNeta" class="profit">$0.00</span></p>
+        <p>ROI: <span id="roiPorcentaje">0</span>%</p>
+    </div>
+
+    <!-- Sección de Historial -->
+    <div class="history-container">
+        <h3>Historial de Escaneos</h3>
+        <button id="btnLimpiar" style="background: #c45500; color: white; padding: 8px; font-size: 14px; margin-bottom: 10px;">Borrar Historial</button>
+        <div id="historialList"></div>
+    </div>
+</div>
+
+<!-- Ruta actualizada apuntando a la carpeta script -->
+<script src="script/script.js"></script>
+</body>
+</html>

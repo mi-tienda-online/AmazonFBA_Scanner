@@ -1,0 +1,13 @@
+{
+  "background_color": "#131921",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "FBA Abarrotes Scanner",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "FBA Scanner",
+  "start_url": "/",
+  "theme_color": "#febd69",
+  "description": "App de arbitraje y escaneo para Amazon FBA",
+  "id": "com.carlos.fbascanner"
+}

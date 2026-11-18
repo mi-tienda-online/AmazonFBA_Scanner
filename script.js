@@ -14,27 +14,57 @@ document.addEventListener("DOMContentLoaded", () => {
 let html5QrcodeScanner = null;
 
 function iniciarEscanner() {
+    const btn = document.getElementById('btnEscanear');
+
     if (!html5QrcodeScanner) {
         html5QrcodeScanner = new Html5Qrcode("reader");
     }
 
     const config = { fps: 10, qrbox: { width: 250, height: 100 } };
 
-    html5QrcodeScanner.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText, decodedResult) => {
-            document.getElementById('barcode').value = decodedText;
-            
-            html5QrcodeScanner.stop().then(() => {
-                document.getElementById('btnEscanear').innerText = "Activar Cámara";
-            }).catch(err => console.error(err));
-        },
-        (errorMessage) => {}
-    ).then(() => {
-        document.getElementById('btnEscanear').innerText = "Detener Cámara";
+    // Si ya está escaneando, lo detenemos
+    if (btn.innerText === "Detener Cámara") {
+        html5QrcodeScanner.stop().then(() => {
+            btn.innerText = "Activar Cámara";
+        }).catch(err => console.error(err));
+        return;
+    }
+
+    // Buscamos las cámaras disponibles para conectar la USB UVC Camera
+    Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+            // Seleccionamos la primera cámara detectada (ideal para tu cámara USB)
+            let cameraId = devices[0].id;
+
+            // Si hay más de una, intentamos buscar la que tenga nombre UVC o USB
+            devices.forEach(device => {
+                if (device.label.toLowerCase().includes('uvc') || device.label.toLowerCase().includes('usb')) {
+                    cameraId = device.id;
+                }
+            });
+
+            html5QrcodeScanner.start(
+                cameraId, 
+                config,
+                (decodedText, decodedResult) => {
+                    document.getElementById('barcode').value = decodedText;
+                    
+                    html5QrcodeScanner.stop().then(() => {
+                        btn.innerText = "Activar Cámara";
+                    }).catch(err => console.error(err));
+                },
+                (errorMessage) => {}
+            ).then(() => {
+                btn.innerText = "Detener Cámara";
+            }).catch(err => {
+                alert("Error al iniciar la cámara: " + err);
+            });
+
+        } else {
+            alert("No se encontró ninguna cámara conectada en la tablet.");
+        }
     }).catch(err => {
-        alert("No se pudo acceder a la cámara. Revisa los permisos.");
+        alert("Error al listar las cámaras. Revisa los permisos del navegador.");
     });
 }
 
@@ -59,7 +89,6 @@ function calcularYGuardar() {
     document.getElementById('roiPorcentaje').innerText = roi.toFixed(1);
     document.getElementById('resultadoBox').style.display = 'block';
 
-    // Objeto del producto analizado
     let producto = {
         barcode: barcode,
         costo: costo.toFixed(2),
@@ -69,14 +98,13 @@ function calcularYGuardar() {
         fecha: new Date().toLocaleTimeString()
     };
 
-    // Guardar en localStorage
     guardarEnLocalStorage(producto);
     mostrarHistorial();
 }
 
 function guardarEnLocalStorage(producto) {
     let historial = JSON.parse(localStorage.getItem('fba_historial')) || [];
-    historial.unshift(producto); // Agrega al inicio de la lista
+    historial.unshift(producto);
     localStorage.setItem('fba_historial', JSON.stringify(historial));
 }
 
@@ -90,7 +118,7 @@ function mostrarHistorial() {
         return;
     }
 
-    historial.forEach((item, index) => {
+    historial.forEach((item) => {
         let div = document.createElement('div');
         div.className = 'history-item';
         div.innerHTML = `
